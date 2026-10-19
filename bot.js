@@ -3,9 +3,24 @@ const express = require('express')
 const cron = require('node-cron')
 const fs = require('fs')
 const axios = require('axios')
+const qrcode = require('qrcode')
 const app = express()
-app.get('/', (req, res) => res.send('Bot Running - addicted ahmed Ai MAX'))
-app.listen(3000)
+
+let lastQR = null
+let isConnected = false
+
+app.get('/', async (req, res) => {
+  if (isConnected) {
+    return res.send('<h1>Bot Connected ✅ - addicted ahmed Ai MAX</h1><p>شغال تمام يا معلمي ❤️</p>')
+  }
+  if (!lastQR) {
+    return res.send('<h1>Bot Running - addicted ahmed Ai MAX</h1><p>Waiting for QR... اعمل ريفريش بعد 5 ثواني</p><script>setTimeout(()=>location.reload(),5000)</script>')
+  }
+  const qrImage = await qrcode.toDataURL(lastQR)
+  res.send(`<h1>Scan QR - addicted ahmed Ai MAX</h1><img src="${qrImage}" style="width:350px;border:10px solid #000"/><br><p>واتساب > الاعدادات > الاجهزة المرتبطة > ربط جهاز</p><p>الـ QR بيتغير كل 30 ثانية اعمل ريفريش</p><script>setTimeout(()=>location.reload(),25000)</script>`)
+})
+
+app.listen(process.env.PORT || 3000, () => console.log("Server running"))
 
 const OWNER_NUMBER = '201285598027@s.whatsapp.net'
 const OWNER_NAME = 'يا استاذ احمد يا معلمي'
@@ -54,9 +69,17 @@ async function aiReply(prompt, senderName, isOwner) {
 
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('auth')
-    const sock = makeWASocket({ auth: state, printQRInTerminal: true })
+    const sock = makeWASocket({ 
+        auth: state, 
+        printQRInTerminal: false,
+        browser: ["Ahmed MAX", "Chrome", "1.0"]
+    })
     sock.ev.on('creds.update', saveCreds)
-    sock.ev.on('connection.update', (u) => { if(u.connection==='close' && u.lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) startBot() })
+    sock.ev.on('connection.update', (u) => { 
+        if(u.qr) { lastQR = u.qr; console.log("QR Generated") }
+        if(u.connection === 'open') { isConnected = true; lastQR = null; console.log("✅ Connected!") }
+        if(u.connection==='close' && u.lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) startBot() 
+    })
 
     sock.ev.on('messages.upsert', async ({ messages }) => {
         const msg = messages[0]
