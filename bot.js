@@ -9,6 +9,7 @@ const app = express()
 let lastQR = null
 let isConnected = false
 
+// صفحات الويب لـ UptimeRobot
 app.get('/', async (req, res) => {
   if (isConnected) {
     return res.send('<h1>Bot Connected ✅ - addicted ahmed Ai MAX</h1><p>شغال تمام يا معلمي ❤️</p>')
@@ -20,7 +21,13 @@ app.get('/', async (req, res) => {
   res.send(`<h1>Scan QR - addicted ahmed Ai MAX</h1><img src="${qrImage}" style="width:350px;border:10px solid #000"/><br><p>واتساب > الاعدادات > الاجهزة المرتبطة > ربط جهاز</p><p>الـ QR بيتغير كل 30 ثانية اعمل ريفريش</p><script>setTimeout(()=>location.reload(),25000)</script>`)
 })
 
-app.listen(process.env.PORT || 3000, () => console.log("Server running"))
+// ده المهم لـ UptimeRobot
+app.get('/health', (req, res) => {
+  res.status(200).send('OK - Bot is alive')
+})
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.log("Server running on port " + PORT))
 
 const OWNER_NUMBER = '201285598027@s.whatsapp.net'
 const OWNER_NAME = 'يا استاذ احمد يا معلمي'
