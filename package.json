@@ -7,6 +7,7 @@
     "@whiskeysockets/baileys": "latest",
     "express": "latest",
     "node-cron": "latest",
-    "axios": "latest"
+    "axios": "latest",
+    "qrcode": "^1.5.3"
   }
 }
