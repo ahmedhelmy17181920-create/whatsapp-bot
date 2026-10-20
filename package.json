@@ -1,13 +1,8 @@
 {
-  "name": "whatsapp-bot",
-  "version": "3.0.0",
+  "name": "hamo-bot",
   "main": "bot.js",
-  "scripts": { "start": "node bot.js" },
   "dependencies": {
-    "@whiskeysockets/baileys": "latest",
-    "express": "latest",
-    "node-cron": "latest",
-    "axios": "latest",
-    "qrcode": "^1.5.3"
+    "@whiskeysockets/baileys": "^6.7.0",
+    "pino": "^8.16.0"
   }
 }
